@@ -1,256 +1,265 @@
-from simulator import * 
-import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt 
-import matplotlib
-# comment all sections before using this section and get the results one by one. 
+import pandas as pd 
 
 
-L = [StorMva.name, StorMen.name, StorMN1.name, StorMN2.name, StorMN3.name, StorMN4.name, StorMLa.name]
-V = [Vva, Ven, VN1, VN2, VN3, VN4, Vla]
-Df = [dva, den, dN1, dN2, dN3, dN4, dla]
-Qf = [Qva, Qen, QN1, QN2, QN3,QN4,Qla ]
-
-DfTWP = [TWPva,TWPen,TWPNa,TWPWac,TWPWb,TWPWd,TWPLa]
-                                  
-def PdStprop():
-     Veldf = pd.DataFrame(L)
-     Veldf.columns = ['StormwaterPipes']
-     Veldf['Velocity(m/s)'] = np.nan
-     Veldf['Depth(m)'] = np.nan
-     Veldf['Discharge(m3/s)'] = np.nan
-     for i in range(len(L)): 
-         Veldf['Velocity(m/s)'][i] = V[i]
-         Veldf['Depth(m)'][i] = Df[i]
-         Veldf['Discharge(m3/s)'][i] = Qf[i]
-         
-     return Veldf
- 
-def LTwp(ldf):
-    toi = ldf 
-    return toi 
     
 
+TwPsize = [10,20,50,80,100]
+RainSim = [10,20,40]
+Allpipes = pd.read_csv('D:\\Master thesis\\Graphs\\Results\\ExcelR\\Allpipes.csv')
+AllWells = pd.read_csv('D:\\Master thesis\\Graphs\\Results\\ExcelR\\AllWells.csv')
 
-# will have to get results one by one, hence have to comment all other functions not in use        
-#Flp10t9 = PdStprop()
-#Flp10t18 = PdStprop()
-#Flp10t27 = PdStprop()
-#Flp20t9 = PdStprop()
-#Flp20t18 = PdStprop()
-#Flp20t27 = PdStprop()
-#Flp40t9 = PdStprop()
-#Flp40t18 = PdStprop()
-#Flp40t27 = PdStprop()
+lcolAll = Allpipes.columns
 
-#TWP10t9 = LTwp(DfTWP)
-#TWP10t18 = LTwp(DfTWP)
-#TWP10t27 =  LTwp(DfTWP)
-#TWP20t9  = LTwp(DfTWP)
-#TWP20t18 =  LTwp(DfTWP)
-#TWP20t27 =  LTwp(DfTWP)
-#TWP40t9 =   LTwp(DfTWP)
-#TWP40t18 =  LTwp(DfTWP)
-#TWP40t27 =  LTwp(DfTWP)
 
-def Combine3(df1,df2,df3): 
-    df4 = pd.DataFrame(L)
-    df4.columns = ['StormwaterPipes']
-    df4['9Velocity(m/s)'] = df1['Velocity(m/s)']
-    df4['9Depth(m)'] = df1['Depth(m)']
-    df4['9Discharge(m3/s)'] = df1['Discharge(m3/s)']
-    df4['18Velocity(m/s)'] = df2['Velocity(m/s)']
-    df4['18Depth(m)'] = df2['Depth(m)']
-    df4['18Discharge(m3/s)'] = df2['Discharge(m3/s)']
-    df4['27Velocity(m/s)'] = df3['Velocity(m/s)']
-    df4['27Depth(m)'] = df3['Depth(m)']
-    df4['27Discharge(m3/s)'] = df3['Discharge(m3/s)']
+def MxPtwp(nt,P9,P18,P27,f,dfM):
+    ltemp =[] 
+    for i in range(len(dfM)): 
+        if dfM['TWPsize'][i] == nt:
+            ltemp.append(i)
+    lP9temp = []
+    lP18temp =[]
+    lP27temp =[]
+    lPl = [lP9temp,lP18temp,lP27temp]
+    lTr = [15,30,45]
+    for z in ltemp: 
+        lP9temp.append(dfM[P9][z])
+        lP18temp.append(dfM[P18][z])
+        lP27temp.append(dfM[P18][z])
+    Mtemp =[] 
+    Mtemp.append(f(lP9temp))
+    Mtemp.append(f(lP18temp))
+    Mtemp.append(f(lP27temp))
+    PMt = f(Mtemp)
+    Pipe = dfM['PipeName'][ltemp[lPl[Mtemp.index(PMt)].index(PMt)]]
     
-    return df4
-
-Lsize10 = [20,50,80,100,10]
-RainSl = [10,10,10,10,20,20,20,20,40,40,40,40]
-RainSl1 = [10,10,10,10,10,20,20,20,20,20,40,40,40,40,40]
-lac = [10,10]
-l10 =[10,10,10,10]
-l20 =[20,20,20,20]
-l40 = [40,40,40,40]
-l101 =[10,10,10,10,10]
-l201 =[20,20,20,20,20]
-l401 = [40,40,40,40,40]
-def Combine3Twp(df1,df2,df3, li,ls):
-    df4 = pd.DataFrame(li)
-    df4.columns = ['Rain(mm)']
-    df4['TWPsize'] = ls
-    df4['9TWPhetro'] = df1['TWPhetro']
-    df4['9HeteroTss(kg)'] =df1['HeteroTss(kg)']
-    df4['9HeteroOrg(kg)'] = df1['HeteroOrg(kg)']
-    df4['9TWPin'] = df1['TWPin']
-    df4['9TWPout'] = df1['TWPout']
-    df4['9TWPprist'] = df1['TWPprist']
-    df4['9MassSettle(kg)'] = df1['MassSettle(kg)']
-    df4['18TWPhetro'] = df2['TWPhetro']
-    df4['18HeteroTss(kg)'] = df2['HeteroTss(kg)']
-    df4['18HeteroOrg(kg)'] = df2['HeteroOrg(kg)']
-    df4['18TWPin'] = df2['TWPin']
-    df4['18TWPout'] = df2['TWPout']
-    df4['18TWPprist'] = df2['TWPprist']
-    df4['18MassSettle(kg)'] = df2['MassSettle(kg)']
-    df4['27TWPhetro'] = df3['TWPhetro']
-    df4['27HeteroTss(kg)'] = df3['HeteroTss(kg)']
-    df4['27HeteroOrg(kg)'] = df3['HeteroOrg(kg)']
-    df4['27TWPin'] =  df3['TWPin']
-    df4['27TWPout'] = df3['TWPout']
-    df4['27TWPprist'] = df3['TWPprist']
-    df4['27MassSettle(kg)'] = df3['MassSettle(kg)']
     
-    return df4
+    return (PMt , Pipe, (dfM['Rain(mm)'][ltemp[lPl[Mtemp.index(PMt)].index(PMt)]], lTr[Mtemp.index(PMt)]))
 
-def Combine3TwpP(num,Rl,n,lis1,lis2,lis3,ls): 
-    name1 = Combine3Twp(TWP10t9[num],TWP10t18[num],TWP10t27[num],lis1,ls) 
-    name2 = Combine3Twp(TWP20t9[num], TWP20t18[num], TWP20t27[num],lis2,ls)   
-    name3 = Combine3Twp(TWP40t9[num], TWP40t18[num], TWP40t27[num],lis3,ls)
-    df7 = pd.DataFrame(Rl)
-    df7.columns = ['Rain(mm)']
-    df7['TWPsize'] = np.nan
-    df7['9TWPhetro'] = np.nan
-    df7['9HeteroTss(kg)'] = np.nan
-    df7['9HeteroOrg(kg)'] = np.nan
-    df7['9TWPin'] = np.nan
-    df7['9TWPout'] = np.nan
-    df7['9TWPprist'] = np.nan
-    df7['9MassSettle(kg)'] = np.nan
-    df7['18TWPhetro'] = np.nan
-    df7['18HeteroTss(kg)'] = np.nan
-    df7['18HeteroOrg(kg)'] = np.nan
-    df7['18TWPin'] = np.nan
-    df7['18TWPout'] = np.nan
-    df7['18TWPprist'] = np.nan
-    df7['18MassSettle(kg)'] = np.nan
-    df7['27TWPhetro'] = np.nan
-    df7['27HeteroTss(kg)'] = np.nan
-    df7['27HeteroOrg(kg)'] = np.nan
-    df7['27TWPin'] = np.nan
-    df7['27TWPout'] = np.nan
-    df7['27TWPprist'] = np.nan
-    df7['27MassSettle(kg)'] = np.nan
-    for i in range(0,n) : 
-         df7.loc[i] = name1.loc[i].copy()
-         df7.loc[i+n] = name2.loc[i].copy()
-         df7.loc[i+ 2*n] = name3.loc[i].copy()
-    
-          
-    return df7 
-    
+#MxPtwp(10, lcolAll[2], lcolAll[8], lcolAll[14],max)
 
-TWPvaRe = Combine3TwpP(0,RainSl,4,l10,l20,l40, Lsize)
-TWPenRe = Combine3TwpP(1,RainSl,4,l10,l20,l40, Lsize)
-TWPnaRe = Combine3TwpP(2,RainSl,4,l10,l20,l40,l10 )
-TWPWacRe = Combine3TwpP(3,lac, 2,l10,l20,l40, l10)
-TWPWbRe = Combine3TwpP(4,RainSl, 4,l10,l20,l40, Lsize)
-TWPWdRe = Combine3TwpP(5,RainSl1,5,l101,l201,l401, Lsize10 )
-TWPWlaRe = Combine3TwpP(6, RainSl1,5, l101,l201,l401,Lsize10)
+def DfT(nP,num,f, dfM): 
+    df5 = pd.DataFrame(TwPsize)
+    df5.columns = ['TWPsize']
+    df5[nP] = np.nan
+    df5['Rain(mm)'] = np.nan
+    df5['Time(mins)'] = np.nan
+    df5['PipeName'] = np.nan
+    for i in range(len(TwPsize)): 
+        df5.iloc[i,1] = MxPtwp(TwPsize[i], lcolAll[num], lcolAll[num+7], lcolAll[num+14], f, dfM)[0]
+        df5.iloc[i,2] = MxPtwp(TwPsize[i], lcolAll[num], lcolAll[num+7], lcolAll[num+14], f,dfM)[2][0]
+        df5.iloc[i,3] = MxPtwp(TwPsize[i], lcolAll[num], lcolAll[num+7], lcolAll[num+14], f,dfM)[2][1]
+        df5.iloc[i,4] = MxPtwp(TwPsize[i], lcolAll[num], lcolAll[num+7], lcolAll[num+14], f,dfM)[1]
+        
+    return df5
 
-
-Flp103 = Combine3(Flp10t9, Flp10t18,Flp10t27)
-Flp203 = Combine3(Flp20t9,Flp20t18,Flp20t27)
-Flp403 = Combine3(Flp20t9,Flp20t18,Flp20t27)
-#dfR= [Flp10t9,Flp10t18,Flp10t27,Flp20t9,Flp20t18,Flp20t27,Flp40t9,Flp40t18,Flp40t27]
-
-# provision made for depth and dishcarge( in mm and L/s)
-def Reardf(df9,df18,df27,n): 
-    redf = pd.DataFrame(L)
-    redf.columns = ['StormwaterPipes']
-    redf['15min'] = np.nan
-    redf['30min'] = np.nan
-    redf['45min'] = np.nan
-    for i in range(len(L)):
-        redf.iloc[i,1] = df9.iloc[i,n] *1000000
-        redf.iloc[i,2] = df18.iloc[i,n] *1000000
-        redf.iloc[i,3] = df27.iloc[i,n] *1000000
-    #redf = redf.set_index(redf['StormwaterPipes'])
-    #redf = redf.drop(columns = ['StormwaterPipes'])
-    return redf
-
-
-Redf10V = Reardf(Flp10t9,Flp10t18,Flp10t27,1)
-Redf20V = Reardf(Flp20t9,Flp20t18,Flp20t27,1)
-Redf40V = Reardf(Flp40t9,Flp40t18,Flp40t27,1)
-Redf10D = Reardf(Flp10t9,Flp10t18,Flp10t27,2)
-Redf20D = Reardf(Flp20t9,Flp20t18,Flp40t27,2)
-Redf40D = Reardf(Flp40t9,Flp40t18,Flp40t27,2)
-Redf10Q = Reardf(Flp10t9,Flp10t18,Flp10t27,3)
-Redf20Q = Reardf(Flp20t9,Flp20t18,Flp20t27,3)
-Redf40Q = Reardf(Flp40t9,Flp40t18,Flp40t27,3)
-#TO excel funtion 
-
-def ToEx(df,p): 
-    df.to_excel(p)
-
-ToEx(Flp103,'D:\Master thesis\Graphs\Results\ExcelR\Flp103.xlsx')
-ToEx(Flp203,'D:\Master thesis\Graphs\Results\ExcelR\Flp203.xlsx')
-ToEx(Flp403,'D:\Master thesis\Graphs\Results\ExcelR\Flp403.xlsx')
-
-ToEx(TWPvaRe,'D:\Master thesis\Graphs\Results\ExcelR\TWPvaRe.xlsx')
-ToEx(TWPenRe,'D:\Master thesis\Graphs\Results\ExcelR\TWPenRe.xlsx')
-ToEx(TWPnaRe,'D:\Master thesis\Graphs\Results\ExcelR\TWPnaRe.xlsx')
-ToEx(TWPWacRe,'D:\Master thesis\Graphs\Results\ExcelR\TWPWacRe.xlsx')
-ToEx(TWPWbRe,'D:\Master thesis\Graphs\Results\ExcelR\TWPWbRe.xlsx')
-ToEx(TWPWdRe,'D:\Master thesis\Graphs\Results\ExcelR\TWPWdRe.xlsx')
-ToEx(TWPWlaRe,'D:\Master thesis\Graphs\Results\ExcelR\TWPWlaRe.xlsx')
-
-ToEx(Redf10V,'D:\Master thesis\Graphs\Results\ExcelR\Redf10V.xlsx')
-ToEx(Redf20V,'D:\Master thesis\Graphs\Results\ExcelR\Redf20V.xlsx')
-ToEx(Redf40V,'D:\Master thesis\Graphs\Results\ExcelR\Redf40V.xlsx')
-ToEx(Redf10D,'D:\Master thesis\Graphs\Results\ExcelR\Redf10D.xlsx')
-ToEx(Redf20D,'D:\Master thesis\Graphs\Results\ExcelR\Redf20D.xlsx')
-ToEx(Redf40D,'D:\Master thesis\Graphs\Results\ExcelR\Redf40D.xlsx')
-ToEx(Redf10Q,'D:\Master thesis\Graphs\Results\ExcelR\Redf10Q.xlsx')
-ToEx(Redf20Q,'D:\Master thesis\Graphs\Results\ExcelR\Redf20Q.xlsx')
-ToEx(Redf40Q,'D:\Master thesis\Graphs\Results\ExcelR\Redf40Q.xlsx')
-
-
-
-
-
-
-
-
+def TotalM(cn,dfM): 
+    df5 = pd.DataFrame(RainSim)
+    df5.columns = ['Rain(mm)']
+    df5['15mins'] = np.nan
+    df5['30mins'] = np.nan
+    df5['45mins'] = np.nan
+    for t in range(0,3):
+        for z in range(len(RainSim)): 
+           InRain =[]
+           #InRain1 = []
+           for i in range(len(dfM)): 
+               if dfM['Rain(mm)'][i] == RainSim[z]:
+                   if dfM.iloc[i,cn + (7*t)] == 'nan' :
+                           InRain.append(0)
+                   else : 
+                       InRain.append(dfM.iloc[i,cn + (7*t)])
+               #if dfM1['Rain(mm)'][i] == RainSim[z] :
+                   #InRain1.append(dfM1.iloc[i,cn + (6*t)])
+                   
+           df5.iloc[z,t+1] = sum(InRain) #+ sum(InRain1)
+    return df5
         
 
+MsettleT = TotalM(8, Allpipes)  
+HetroT = TotalM(3,Allpipes)  
+PristT = TotalM(7,Allpipes)
+MWsettleT = TotalM(8, AllWells)
+MWhetroT = TotalM(3,AllWells)
+MWpristT = TotalM(7,AllWells)
+    
+
+Htro = DfT('HetroTss(kg)', 3, max,Allpipes)
+Htrom = DfT('HetroTss(kg)', 3, min,Allpipes)
+Setl = DfT('MassSettle(kg)', 9, max,Allpipes)
+Setlm = DfT('MassSettle(kg)', 9, min,Allpipes)
+Prist = DfT('TWPprist', 8, max,Allpipes)
+Pristm = DfT('TWPprist', 8, min,Allpipes)
+
+Whtro = DfT('HetroTss(kg)', 3, max,AllWells)
+Whtrom = DfT('HetroTss(kg)', 3, min,AllWells)
+WSetl = DfT('MassSettle(kg)', 3, max,AllWells)
+WSetlm = DfT('MassSettle(kg)', 9, min,AllWells)
+WPrist = DfT('TWPprist', 8, max,AllWells)
+WPristm = DfT('TWPprist', 8, min,AllWells)
+        
+def ToEx(df,p): 
+    df.to_excel(p)           
+
+ToEx(Htro,'D:\Master thesis\Graphs\Results\ExcelProcess\Hetero.xlsx' )   
+ToEx(Htrom,'D:\Master thesis\Graphs\Results\ExcelProcess\Heterom.xlsx' ) 
+ToEx(HetroT,'D:\Master thesis\Graphs\Results\ExcelProcess\HeteroT.xlsx' ) 
+ToEx(MWhetroT,'D:\Master thesis\Graphs\Results\ExcelProcess\MWhetero.xlsx' )
+
+ToEx(Setl,'D:\Master thesis\Graphs\Results\ExcelProcess\Setl.xlsx' )   
+ToEx(Setlm,'D:\Master thesis\Graphs\Results\ExcelProcess\Setlm.xlsx' ) 
+ToEx(MsettleT,'D:\Master thesis\Graphs\Results\ExcelProcess\MSetlT.xlsx' ) 
+ToEx(MWsettleT,'D:\Master thesis\Graphs\Results\ExcelProcess\MWSetlT.xlsx' )
+ToEx(Prist,'D:\Master thesis\Graphs\Results\ExcelProcess\prist.xlsx' ) 
+ToEx(Pristm,'D:\Master thesis\Graphs\Results\ExcelProcess\pristm.xlsx' )
 
 
-#Redf10V,Redf20V,Redf40V,Redf10D,Redf20D,Redf40D,Redf10Q,Redf20Q,Redf40Q
- 
-def Subpdf(df1,df2,df3,l):
+R10df = pd.DataFrame(Allpipes['Rain(mm)']) 
+R10df.columns = ['Rain(mm)']
+R10df['TWPsize'] = Allpipes['TWPsize']
+R10df['9TWPhetro'] = Allpipes['9TWPhetro']
+R10df['9HeteroTss(kg)'] = Allpipes['9HeteroTss(kg)']
+R10df['9HeteroOrg(kg)'] = Allpipes['9HeteroOrg(kg)']
+R10df['9TWPin'] = Allpipes['9TWPin']
+R10df['9TWPout'] = Allpipes['9TWPout']
+R10df['9TWPprist'] = Allpipes['9TWPprist']
+R10df['9MassSettle(kg)'] = Allpipes['9MassSettle(kg)']
+R10df['PipeName'] = Allpipes['PipeName']
+
+lir = []
+for i in range(len(R10df)): 
+    if R10df.iloc[i,0] == 20 : 
+        lir.append(i) 
+    if R10df.iloc[i,0] == 40 : 
+        lir.append(i)
+R10df.drop(lir, axis = 0, inplace = True)    
+#R20df.drop([28,42,43,44], axis = 0 , inplace = True)
+R10df.reset_index(inplace = True)   
+
+R20df = pd.DataFrame(Allpipes['Rain(mm)']) 
+R20df.columns = ['Rain(mm)']
+R20df['TWPsize'] = Allpipes['TWPsize']
+R20df['9TWPhetro'] = Allpipes['9TWPhetro']
+R20df['9HeteroTss(kg)'] = Allpipes['9HeteroTss(kg)']
+R20df['9HeteroOrg(kg)'] = Allpipes['9HeteroOrg(kg)']
+R20df['9TWPin'] = Allpipes['9TWPin']
+R20df['9TWPout'] = Allpipes['9TWPout']
+R20df['9TWPprist'] = Allpipes['9TWPprist']
+R20df['9MassSettle(kg)'] = Allpipes['9MassSettle(kg)']
+R20df['PipeName'] = Allpipes['PipeName']
+
+lir1 = []
+for i in range(len(R20df)): 
+    if R20df.iloc[i,0] == 10 : 
+        lir1.append(i) 
+    if R20df.iloc[i,0] == 40 : 
+        lir1.append(i)
+R20df.drop(lir1, axis = 0, inplace = True)    
+#R20df.drop([28,42,43,44], axis = 0 , inplace = True)
+R20df.reset_index(inplace = True) 
+
+
+R40df = pd.DataFrame(Allpipes['Rain(mm)']) 
+R40df.columns = ['Rain(mm)']
+R40df['TWPsize'] = Allpipes['TWPsize']
+R40df['9TWPhetro'] = Allpipes['9TWPhetro']
+R40df['9HeteroTss(kg)'] = Allpipes['9HeteroTss(kg)']
+R40df['9HeteroOrg(kg)'] = Allpipes['9HeteroOrg(kg)']
+R40df['9TWPin'] = Allpipes['9TWPin']
+R40df['9TWPout'] = Allpipes['9TWPout']
+R40df['9TWPprist'] = Allpipes['9TWPprist']
+R40df['9MassSettle(kg)'] = Allpipes['9MassSettle(kg)']
+R40df['PipeName'] = Allpipes['PipeName']
+
+lir12 = []
+for i in range(len(R40df)): 
+    if R40df.iloc[i,0] == 10 : 
+        lir12.append(i) 
+    if R40df.iloc[i,0] == 20: 
+        lir12.append(i)
+R40df.drop(lir12, axis = 0, inplace = True)    
+R40df.reset_index(inplace = True)
+
+lpn = ['Vasteras','Enkoping','Natural1','Natural2','Natural3','Natural4', 'Last']
+
+Newdf10 = pd.DataFrame((lpn))
+Newdf10.columns = ['PipeName']
+Newdf10['9TWPhetro'] = np.nan
+Newdf10['9MassSettle(kg)'] = np.nan
+Newdf10['9TWPprist'] = np.nan
+
+for x in range(len(Newdf10['PipeName'])):
+    lin = R10df[Newdf10.iloc[x,0] == R10df.iloc[:,10]].index.values
     
-    fig, (ax1,ax2,ax3) = plt.subplots(3,figsize=(12,5))
-    ax1.scatter(df1.iloc[:,0], df1.iloc[:,1], color = 'Skyblue', label = '15mins', marker = 'o')
-    ax1.scatter(df1.iloc[:,0], df1.iloc[:,2].values, color = 'Black', label = '30mins', marker = '^')
-    ax1.scatter(df1.iloc[:,0], df1.iloc[:,3], color = 'r', label = '45mins', marker = 's')
-    ax1.margins()
-    ax1.set_xticks([])
-    ax2.scatter(df2.iloc[:,0], df2.iloc[:,1], color = 'Skyblue', marker = 'o')
-    ax2.scatter(df2.iloc[:,0], df2.iloc[:,2].values, color = 'Black', marker = '^')
-    ax2.scatter(df2.iloc[:,0], df2.iloc[:,3], color = 'r', marker = 's')
-    ax2.set_xticks([])
-    ax2.set_ylabel(l)
-    ax3.scatter(df3.iloc[:,0], df3.iloc[:,1], color = 'Skyblue', marker = 'o')
-    ax3.scatter(df3.iloc[:,0], df3.iloc[:,2].values, color = 'Black', marker = '^')
-    ax3.scatter(df3.iloc[:,0], df3.iloc[:,3], color = 'r', marker = 's')
-    ax3.set_xlabel('Storm Water Pipe Name')
-    fig.legend()
+    Newdf10['9TWPhetro'][x] = sum(R10df['9TWPhetro'][lin])   
+    Newdf10['9MassSettle(kg)'][x] = sum(R10df['9MassSettle(kg)'][lin])
+    Newdf10['9TWPprist'][x] = sum(R10df['9TWPprist'][lin])
     
+R20df.iloc[9,10]  = 'Natural2'
+
+Newdf20 = pd.DataFrame((lpn))
+Newdf20.columns = ['PipeName']
+Newdf20['9TWPhetro'] = np.nan
+Newdf20['9MassSettle(kg)'] = np.nan
+Newdf20['9TWPprist'] = np.nan
+for x in range(len(Newdf20['PipeName'])):
+    lin1 = R20df[Newdf20.iloc[x,0] == R20df.iloc[:,10]].index.values
     
+    Newdf20['9TWPhetro'][x] = sum(R20df['9TWPhetro'][lin1])   
+    Newdf20['9MassSettle(kg)'][x] = sum(R20df['9MassSettle(kg)'][lin1])
+    Newdf20['9TWPprist'][x] = sum(R20df['9TWPprist'][lin1])        
+R40df.iloc[9,10 ] = 'Natural2'
+
+Newdf40 = pd.DataFrame(lpn)
+Newdf40.columns = ['PipeName']
+Newdf40['9TWPhetro'] = np.nan
+Newdf40['9MassSettle(kg)'] = np.nan
+Newdf40['9TWPprist'] = np.nan
+Newdf40.iloc[5,0] = 'Natural2'
+for x in range(len(Newdf20['PipeName'])):
+    lin12 = R20df[Newdf40.iloc[x,0] == R40df.iloc[:,10]].index.values
     
-    
-    
- 
-Subpdf(Redf10V,Redf20V,Redf40V,'Velocity(m/s)')    
-Subpdf(Redf10D,Redf20D,Redf40D,'Depth(mm)') 
-Subpdf(Redf10Q,Redf20Q,Redf40Q,'Discharge(L/s)')  
-    
-    
+    Newdf40['9TWPhetro'][x] = sum(R40df['9TWPhetro'][lin12])   
+    Newdf40['9MassSettle(kg)'][x] = sum(R40df['9MassSettle(kg)'][lin12])
+    Newdf40['9TWPprist'][x] = sum(R40df['9TWPprist'][lin12])    
+
+plt.figure(4)
+x_pos = np.arange(len(Newdf40))
+plt.bar(x_pos -0.2, Newdf10['9TWPhetro'], width = 0.2, label = '10mm15mins')
+plt.bar(x_pos , Newdf20['9TWPhetro'], width = 0.2, label = '20mm15mins' )
+plt.bar(x_pos +0.2, Newdf40['9TWPhetro'], width = 0.2, label = '40mm15mins')
+plt.xticks(x_pos, Newdf40['PipeName'])
+plt.xlabel('PipeNames', fontsize=17)
+plt.ylabel('Hetro-aggegation(kg)', fontsize =17)
+plt.tick_params(labelsize = 15)
+plt.legend()
+
+
+plt.figure(5)
+x_pos = np.arange(len(Newdf40))
+plt.bar(x_pos -0.2, Newdf20['9MassSettle(kg)'], width = 0.2, label = '10mm15mins' )
+plt.bar(x_pos, Newdf20['9MassSettle(kg)'], width = 0.2, label = '20mm15mins' )
+plt.bar(x_pos +0.2, Newdf40['9MassSettle(kg)'], width = 0.2, label = '40mm15mins')
+plt.xticks(x_pos, Newdf40['PipeName'])
+plt.xlabel('PipeNames', fontsize = 17)
+plt.ylabel('MassSettle(kg)', fontsize = 17)
+plt.tick_params(labelsize = 15)
+plt.legend()
+
+plt.figure(6)
+x_pos = np.arange(len(Newdf40))
+plt.bar(x_pos -0.2, Newdf10['9TWPprist'], width = 0.2, label = '10mm15mins' )
+plt.bar(x_pos , Newdf20['9TWPprist'], width = 0.2, label = '20mm15mins' )
+plt.bar(x_pos +0.2, Newdf40['9TWPprist'], width = 0.2, label = '40mm15mins')
+plt.xticks(x_pos, Newdf40['PipeName'])
+plt.xlabel('PipeNames', fontsize = 17)
+plt.ylabel('TWPprist(kg)', fontsize = 17)
+plt.tick_params(labelsize = 15)
+plt.legend()    
+
+  
+
      
 
   
