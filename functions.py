@@ -71,7 +71,7 @@ def Rainconvert(R,t):
     
 def Mpflow(Mpc, In, Ac, Ti): # calculates flow of TWP on road in mass/m3
     Iw = In* Ac * Ti 
-    C = Mpc *0.5 / (Iw)
+    C = Mpc *0.005*Ac / (Iw)
     return C
 
 Vsettle(1000, 0.3)
