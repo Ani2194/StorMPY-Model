@@ -77,10 +77,10 @@ def TotalM(cn,dfM):
     return df5
         
 
-MsettleT = TotalM(8, Allpipes)  
+MsettleT = TotalM(9, Allpipes)  
 HetroT = TotalM(3,Allpipes)  
 PristT = TotalM(7,Allpipes)
-MWsettleT = TotalM(8, AllWells)
+MWsettleT = TotalM(9, AllWells)
 MWhetroT = TotalM(3,AllWells)
 MWpristT = TotalM(7,AllWells)
     
